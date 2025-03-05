@@ -27,9 +27,9 @@ export function activate(context: vscode.ExtensionContext) {
 
 function getWebviewContent(webview: Webview, extensionUri: Uri) {
     // The CSS file from the Svelte build output
-    const stylesUri = getUri(webview, extensionUri, ["out","webview", "bundle.css"]);
+    const stylesUri = getUri(webview, extensionUri, ["dist","webview", "bundle.css"]);
     // The JS file from the Svelte build output
-    const scriptUri = getUri(webview, extensionUri, ["out","webview", "bundle.js"]);
+    const scriptUri = getUri(webview, extensionUri, ["dist","webview", "bundle.js"]);
     
     const nonce = getNonce();
 

@@ -1,28 +1,37 @@
 <script lang=ts>
     import { writable } from 'svelte/store';
     import { onMount } from 'svelte'
+
     import {
       SvelteFlow,
       Controls,
       Background,
       BackgroundVariant,
-      MiniMap
+      MiniMap,
+
+      SnapGrid
+
     } from '@xyflow/svelte';
    
     // 👇 this is important! You need to import the styles for Svelte Flow to work
     import '@xyflow/svelte/dist/style.css';
+    import CustomNode from './CustomNode.svelte';
+
+    const nodeTypes = {
+      'customNode': CustomNode
+    };
    
     // We are using writables for the nodes and edges to sync them easily. When a user drags a node for example, Svelte Flow updates its position.
     const nodes = writable([
       {
         id: '1',
-        type: 'input',
+        type: 'customNode',
         data: { label: 'Input Node' },
         position: { x: 0, y: 0 }
       },
       {
         id: '2',
-        type: 'default',
+        type: 'customNode',
         data: { label: 'Node' },
         position: { x: 0, y: 150 }
       }
@@ -30,16 +39,16 @@
    
     // same for edges
     const edges = writable([
-      {
-        id: '1-2',
-        type: 'default',
-        source: '1',
-        target: '2',
-        label: 'Edge Text'
-      }
+      // {
+      //   id: '1-2',
+      //   type: 'default',
+      //   source: '1',
+      //   target: '2',
+      //   label: 'Edge Text'
+      // }
     ]);
    
-    let colorMode = $state()
+    let colorMode : 'system' | 'light' | 'dark' = $state("light")
 
     function updateColorMode() {
       colorMode = document.querySelector("body").getAttribute("data-vscode-theme-kind") == "vscode-light" ? "light" : "dark"
@@ -47,7 +56,7 @@
 
     updateColorMode()
 
-    const snapGrid = [25, 25];
+    const snapGrid : SnapGrid = [25, 25];
 
     // Sélectionner la div que vous souhaitez observer
     const targetNode = document.querySelector("body");
@@ -78,6 +87,7 @@
     {edges}
     {snapGrid}
     {colorMode}
+    {nodeTypes}
     fitView
     on:nodeclick={(event) => console.log('on node click', event.detail.node)}
     >
