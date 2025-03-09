@@ -1,5 +1,6 @@
 import App from './App.svelte';
 import {mount} from 'svelte';
+import "./main.css";
 
 mount(App, {
     target: (() : HTMLDivElement => {

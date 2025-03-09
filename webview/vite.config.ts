@@ -1,6 +1,6 @@
 import { defineConfig } from 'vite';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
-// import tailwindcss from '@tailwindcss/vite';
+import tailwindcss from '@tailwindcss/vite';
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -20,6 +20,6 @@ export default defineConfig({
   },
   plugins: [
     svelte(),
-    // tailwindcss(),
+    tailwindcss(),
   ],
 });
