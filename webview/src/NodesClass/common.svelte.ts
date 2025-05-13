@@ -1,61 +1,74 @@
-import { get_instance } from "../store.svelte";
+import {get_instance} from "../store.svelte";
 
 export class Entry {
-  public id: string = $state("");
-  public type: string = $state("");
-  public value: string = $state("");
-  constructor(id: string, type: string, value: string) {
-    this.id = id;
-    this.type = type;
-    this.value = value;
-  }
+    public id: string = $state("");
+    public type: string = $state("");
+    public value: string = $state("");
+
+    constructor(id: string, type: string, value: string) {
+        this.id = id;
+        this.type = type;
+        this.value = value;
+    }
 }
 
 export class common {
-  id: string;
-  name: string;
-  position: XYPosition;
-  unique = false;
+    static origin = [0.5, 0.0];
+    static unique = false;
+    id: string;
+    type: string;
+    position: XYPosition;
+    unique = false;
+    reference: string | undefined = undefined;
 
-  reference: string | undefined = undefined;
-  _label: string = $state("");
-  _inputs: Entry[] = $state([]);
-  _outputs: Entry[] = $state([]);
-
-  get inputs() {
-    if (this.reference) {
-        return get_instance(this.reference).inputs;
+    constructor() {
     }
-    else {
-        return this._inputs;
-    }
-  }
 
-  
-  get outputs() {
-    if (this.reference) {
-        return get_instance(this.reference).outputs;
-    }
-    else {
-        return this._outputs;
-    }
-  } 
+    _label: string = $state("");
 
-  get label() {
-    if (this.reference) {
-        return get_instance(this.reference).label;
+    get label() {
+        return this.reference ? get_instance(this.reference).label : this._label;
     }
-    else {
-        return this._label;
+
+    _inputs: Entry[] = $state([]);
+
+    get inputs() {
+        return this.reference ? get_instance(this.reference).inputs : this._inputs;
     }
-  } 
 
-  static origin = [0.5, 0.0];
-  static unique = false;
+    _outputs: Entry[] = $state([]);
 
-  constructor() {}
+    get outputs() {
+        return this.reference
+            ? get_instance(this.reference).outputs
+            : this._outputs;
+    }
 
-  instanciate(id: string, name: string, position: XYPosition): common {
-    return Object.assign(new common(),{ ...this, id, name, position });
-  }
+    set sinputs(nval: Entry[]) {
+        if (this.reference) {
+            get_instance(this.reference).inputs = nval;
+        } else {
+            this._inputs = nval;
+        }
+    }
+
+    set soutputs(nval: Entry[]) {
+        if (this.reference) {
+            get_instance(this.reference).outputs = nval;
+        } else {
+            this._outputs = nval;
+        }
+    }
+
+    set slabel(nval: string) {
+        if (this.reference) {
+            get_instance(this.reference).label = nval;
+        } else {
+            this._label = nval;
+        }
+    }
+
+    instanciate(id: string, name: string, position: XYPosition): common {
+        return Object.assign(new common(), {...this, id, name, position});
+    }
 }

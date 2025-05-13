@@ -3,7 +3,7 @@ import {mount} from 'svelte';
 import "./main.css";
 
 mount(App, {
-    target: (() : HTMLDivElement => {
+    target: ((): HTMLDivElement => {
         const div = document.createElement('div');
         document.body.appendChild(div);
         return div;

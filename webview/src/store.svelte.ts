@@ -1,19 +1,19 @@
-import { Writable, writable } from "svelte/store";
-import DatabaseNode from "./Nodes/DatabaseNode.svelte";
+import {Writable, writable} from "svelte/store";
+import DatabaseGet from "./Nodes/DatabaseGet.svelte";
 import InputsNode from "./Nodes/InputsNode.svelte";
 import OutputsNode from "./Nodes/OutputsNode.svelte";
 import DatabaseTable from "./Nodes/DatabaseTable.svelte";
 
-import { databaseTable } from "./NodesClass/databaseTable";
-import { apiEndpoint } from "./NodesClass/apiEndpoint";
-import { apiEntrypoint } from "./NodesClass/apiEntrypoint";
-import { common } from "./NodesClass/common.svelte";
-import { databaseInstance } from "./NodesClass/databaseInstance";
+import {apiEndpoint} from "./NodesClass/apiEndpoint";
+import {apiEntrypoint} from "./NodesClass/apiEntrypoint";
+import {databaseTable} from "./NodesClass/database";
+import {common} from "./NodesClass/common.svelte";
+import crypto from "crypto";
 
 export let templates: common[] = $state([
-  new databaseTable(),
-  new apiEndpoint(),
-  new apiEntrypoint(),
+    new databaseTable(),
+    new apiEndpoint(),
+    new apiEntrypoint(),
 ]);
 
 const nodesS: { [id: string]: common } = $state({});
@@ -22,42 +22,38 @@ export const nodes: Writable<any[]> = writable([]);
 export const edges = writable([]);
 
 export const nodeTypes = {
-  DatabaseNode: DatabaseNode,
-  InputsNode: InputsNode,
-  OutputsNode: OutputsNode,
-  DatabaseTable: DatabaseTable,
+    DatabaseGet: DatabaseGet,
+    InputsNode: InputsNode,
+    OutputsNode: OutputsNode,
+    DatabaseTable: DatabaseTable,
 };
 
-export function get_instance(id: string) : common {
-  return nodesS[id];
+export function get_instance(id: string): common {
+    return nodesS[id];
 }
 
-export function add_instance(type: common, position: XYPosition) {
-  let data: common = type.instanciate(`${Math.random()}`, type.name, position);
+export function add_instance(classe: common, position: XYPosition) {
+    let data: common = classe.instanciate(crypto.randomUUID(), classe.type, position);
 
-  if (data.unique) {
-    let newnode = new databaseInstance();
-    newnode.reference = data.id;
-    templates.push(newnode);
-  }
+    if (data.unique) {
+        nodesS[data.id] = data;
+    }
 
-  nodesS[data.id] = data;
-  nodes.update((n) => Object.values(nodesS));
+    nodes.update((n) => [...n, data]);
 }
 
 export function remove_instance(type: any, position: XYPosition) {
-  let data = new type(`${Math.random()}`, type, position);
-  nodes.update((n) => [...n, data]);
+    nodes.update((n) => [...n, data]);
 }
 
 export class dnd {
-  private static type: common | undefined = undefined;
+    private static type: common | undefined = undefined;
 
-  static setType(ntype: common | undefined) {
-    this.type = ntype;
-  }
+    static setType(ntype: common | undefined) {
+        this.type = ntype;
+    }
 
-  static getType() {
-    return this.type;
-  }
+    static getType() {
+        return this.type;
+    }
 }

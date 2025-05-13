@@ -1,4 +1,4 @@
-import { common } from "./common.svelte";
+import {common} from "./common.svelte";
 
 export class apiEndpoint extends common {
     type = "InputsNode";

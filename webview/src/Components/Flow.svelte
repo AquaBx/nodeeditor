@@ -1,90 +1,90 @@
 <script lang="ts">
-  import {
-    SvelteFlow,
-    Controls,
-    Background,
-    BackgroundVariant,
-    MiniMap,
-    SnapGrid,
-    useSvelteFlow,
-  } from "@xyflow/svelte";
+    import {
+        Background,
+        BackgroundVariant,
+        Controls,
+        MiniMap,
+        SnapGrid,
+        SvelteFlow,
+        useSvelteFlow,
+    } from "@xyflow/svelte";
 
-  import {nodes, edges, nodeTypes, add_instance, dnd} from "../store.svelte"
+    import {add_instance, dnd, edges, nodes, nodeTypes} from "../store.svelte"
 
-  // 👇 this is important! You need to import the styles for Svelte Flow to work
-  import "@xyflow/svelte/dist/style.css";
+    // 👇 this is important! You need to import the styles for Svelte Flow to work
+    import "@xyflow/svelte/dist/style.css";
 
-  let colorMode: "system" | "light" | "dark" = $state("light");
+    let colorMode: "system" | "light" | "dark" = $state("light");
 
-  function updateColorMode() {
-    colorMode =
-      document.querySelector("body").getAttribute("data-vscode-theme-kind") ==
-      "vscode-light"
-        ? "light"
-        : "dark";
-  }
+    function updateColorMode() {
+        colorMode =
+            document.querySelector("body").getAttribute("data-vscode-theme-kind") ==
+            "vscode-light"
+                ? "light"
+                : "dark";
+    }
 
-  updateColorMode();
-
-  const snapGrid: SnapGrid = [25, 25];
-
-  // Sélectionner la div que vous souhaitez observer
-  const targetNode = document.querySelector("body");
-
-  // Configurer les options de l'observateur
-  const config = { attributes: true };
-
-  // Fonction de rappel qui sera appelée lorsque des mutations sont détectées
-  const callback = function (mutationsList, observer) {
     updateColorMode();
-  };
 
-  // Créer une instance de MutationObserver et la lier à la fonction de rappel
-  const observer = new MutationObserver(callback);
+    const snapGrid: SnapGrid = [25, 25];
 
-  // Commencer à observer les modifications sur l'élément sélectionné
-  observer.observe(targetNode, config);
+    // Sélectionner la div que vous souhaitez observer
+    const targetNode = document.querySelector("body");
 
-  const { screenToFlowPosition } = useSvelteFlow();
+    // Configurer les options de l'observateur
+    const config = {attributes: true};
 
-  const onDragOver = (event: DragEvent) => {
-    event.preventDefault();
+    // Fonction de rappel qui sera appelée lorsque des mutations sont détectées
+    const callback = function (mutationsList, observer) {
+        updateColorMode();
+    };
 
-    if (event.dataTransfer) {
-      event.dataTransfer.dropEffect = "move";
-    }
-  };
+    // Créer une instance de MutationObserver et la lier à la fonction de rappel
+    const observer = new MutationObserver(callback);
 
-  const onDrop = (event: DragEvent) => {
-    event.preventDefault();
+    // Commencer à observer les modifications sur l'élément sélectionné
+    observer.observe(targetNode, config);
 
-    const type = dnd.getType();
+    const {screenToFlowPosition} = useSvelteFlow();
 
-    if (!type) {
-      return;
-    }
+    const onDragOver = (event: DragEvent) => {
+        event.preventDefault();
 
-    const position = screenToFlowPosition({
-      x: event.clientX,
-      y: event.clientY,
-    });
+        if (event.dataTransfer) {
+            event.dataTransfer.dropEffect = "move";
+        }
+    };
 
-    add_instance(type, position)
-  };
+    const onDrop = (event: DragEvent) => {
+        event.preventDefault();
+
+        const type = dnd.getType();
+
+        if (!type) {
+            return;
+        }
+
+        const position = screenToFlowPosition({
+            x: event.clientX,
+            y: event.clientY,
+        });
+
+        add_instance(type, position)
+    };
 </script>
 
 <SvelteFlow
-  on:dragover={onDragOver}
-  on:drop={onDrop}
-  {nodes}
-  {edges}
-  {snapGrid}
-  {nodeTypes}
-  {colorMode}
-  fitView
-  on:nodeclick={(event) => console.log("on node click", event.detail.node)}
+        {colorMode}
+        {edges}
+        fitView
+        {nodeTypes}
+        {nodes}
+        on:dragover={onDragOver}
+        on:drop={onDrop}
+        on:nodeclick={(event) => console.log("on node click", event.detail.node)}
+        {snapGrid}
 >
-  <Controls />
-  <Background variant={BackgroundVariant.Dots} />
-  <MiniMap />
+    <Controls/>
+    <Background variant={BackgroundVariant.Dots}/>
+    <MiniMap/>
 </SvelteFlow>
